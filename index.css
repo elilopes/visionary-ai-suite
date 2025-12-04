@@ -1,0 +1,105 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #111827; /* gray-900 */
+  color: white;
+}
+
+/* Custom Scrollbar for code blocks */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563; 
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280; 
+}
+
+/* Theme Overrides */
+
+/* Light Mode Overrides */
+[data-theme='light'] {
+  background-color: #f3f4f6 !important; /* gray-100 */
+  color: #111827 !important; /* gray-900 */
+}
+
+[data-theme='light'] .bg-gray-900 {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+[data-theme='light'] .bg-gray-800 {
+  background-color: #f9fafb !important; /* gray-50 */
+  color: #111827 !important;
+  border-color: #e5e7eb !important;
+}
+
+[data-theme='light'] .text-gray-400 {
+  color: #4b5563 !important; /* gray-600 */
+}
+
+[data-theme='light'] .text-gray-300 {
+  color: #374151 !important; /* gray-700 */
+}
+
+[data-theme='light'] .text-gray-200 {
+  color: #1f2937 !important; /* gray-800 */
+}
+
+[data-theme='light'] .border-gray-700 {
+  border-color: #d1d5db !important; /* gray-300 */
+}
+
+/* High Contrast Mode Overrides */
+[data-theme='high-contrast'] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+[data-theme='high-contrast'] .bg-gray-900,
+[data-theme='high-contrast'] .bg-gray-800 {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+}
+
+[data-theme='high-contrast'] .text-gray-400,
+[data-theme='high-contrast'] .text-gray-300,
+[data-theme='high-contrast'] .text-gray-200 {
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+[data-theme='high-contrast'] button,
+[data-theme='high-contrast'] select,
+[data-theme='high-contrast'] input,
+[data-theme='high-contrast'] textarea {
+  border: 2px solid #000000 !important;
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+[data-theme='high-contrast'] .text-indigo-400,
+[data-theme='high-contrast'] .text-teal-400,
+[data-theme='high-contrast'] .text-pink-400 {
+  color: #0000cd !important; /* MediumBlue for links/highlights */
+}

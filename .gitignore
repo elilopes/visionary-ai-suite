@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production Build
+build/
+dist/
+
+# Environment Variables (CRITICAL: Do not commit API Keys)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# OS & IDE Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Application Generated Files (Downloads & Conversions)
+*.mp4
+*.mp3
+*.wav
+*.webm
+*.gif
+*.png
+*.jpg
+*.jpeg
+# Exception: Keep assets if you put them in a dedicated folder later
+!src/assets/
+
+# Backend / Database / Temp
+*.sqlite
+*.db
+cookies.txt
+temp/
