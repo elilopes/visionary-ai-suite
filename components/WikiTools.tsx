@@ -15,39 +15,50 @@ interface WikiToolsProps {
 const WikiTools: React.FC<WikiToolsProps> = ({ labels }) => {
     const [isHelpOpen, setIsHelpOpen] = useState(false);
 
+    // Segurança: Fallbacks para evitar campos vazios se o idioma não estiver completo
+    const l = {
+        title: labels.title || "Wiki Research",
+        description: labels.description || "Ferramentas de pesquisa.",
+        citationFinderTitle: labels.citationFinderTitle || "Citation Validator",
+        wikitextTitle: labels.wikitextTitle || "Wikitext Converter",
+        wikidataTitle: labels.wikidataTitle || "Wikidata Extractor",
+        sparqlTitle: labels.sparqlTitle || "SPARQL Generator",
+        stubTitle: labels.stubTitle || "Stub Generator"
+    };
+
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto pb-20">
             <header className="text-center mb-10">
                 <div className="flex items-center justify-center gap-3">
-                    <h2 className="text-3xl font-bold text-gray-200">{labels.title}</h2>
+                    <h2 className="text-3xl font-bold text-[var(--text-main)]">{l.title}</h2>
                     <button 
                         onClick={() => setIsHelpOpen(true)}
-                        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 text-white font-bold transition-colors text-sm border border-gray-500"
+                        className="w-8 h-8 flex items-center justify-center rounded-full bg-[var(--bg-panel)] hover:bg-[var(--bg-input)] text-[var(--text-main)] font-bold transition-colors text-sm border border-[var(--border-main)]"
                         title="Wikidata Help"
                     >
                         ?
                     </button>
                 </div>
-                <p className="text-gray-400 mt-2">{labels.description}</p>
+                <p className="text-[var(--text-muted)] mt-2">{l.description}</p>
             </header>
             <div className="space-y-6">
-                <ToolSection title={labels.citationFinderTitle} defaultOpen={true}>
+                <ToolSection title={l.citationFinderTitle} defaultOpen={true}>
                     <WikiCitationFinder labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.wikitextTitle}>
+                <ToolSection title={l.wikitextTitle}>
                     <WikitextConverter labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.wikidataTitle}>
+                <ToolSection title={l.wikidataTitle}>
                     <WikidataExtractor labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.sparqlTitle}>
+                <ToolSection title={l.sparqlTitle}>
                     <SparqlGenerator labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.stubTitle}>
+                <ToolSection title={l.stubTitle}>
                     <WikiStubGenerator labels={labels} />
                 </ToolSection>
             </div>

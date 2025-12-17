@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile } from '@ffmpeg/util';
+import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import Spinner from './Spinner';
 
 interface VideoConverterWasmProps {
@@ -11,7 +11,7 @@ interface VideoConverterWasmProps {
 const VideoConverterWasm: React.FC<VideoConverterWasmProps> = ({ labels }) => {
     const [file, setFile] = useState<File | null>(null);
     const [targetFormat, setTargetFormat] = useState('gif');
-    const [isConverting, setIsConverting] = useState(false);
+    const [isConverting, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [message, setMessage] = useState('');
     const [downloadUrl, setDownloadUrl] = useState('');
@@ -34,17 +34,23 @@ const VideoConverterWasm: React.FC<VideoConverterWasmProps> = ({ labels }) => {
         });
         
         try {
-            // Note: SharedArrayBuffer is required for ffmpeg.wasm which needs specific headers. 
-            // In a simple React dev environment without headers, this might fail or fallback to single thread if version supports.
-            // Using coreURL/wasmURL from CDN to ensure loading.
+            // Using precise URLs from unpkg to bypass origin restrictions on Workers
+            // Version 0.12.x requires consistent sources for core and worker
+            const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
+            const ffmpegBaseURL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/esm';
+            
+            // Note: v0.12 requires SharedArrayBuffer and COOP/COEP headers. 
+            // In environments where headers can't be set, it may fail with a SharedArrayBuffer error.
             await ffmpeg.load({
-                coreURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js',
-                wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.wasm'
+                coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+                wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+                // Explicitly provide workerURL via blob to fix origin construction issues
+                workerURL: await toBlobURL(`${ffmpegBaseURL}/worker.js`, 'text/javascript'),
             });
             setIsLoaded(true);
         } catch (e: any) {
             console.error("FFmpeg Load Error:", e);
-            setError("Could not load FFmpeg. Your browser might not support SharedArrayBuffer or Cross-Origin headers are missing.");
+            setError("Falha ao carregar motor FFmpeg local. Isso ocorre devido a restrições de segurança do navegador (SharedArrayBuffer) ou erro de carregamento do Worker via CDN.");
         }
     };
 
@@ -59,25 +65,25 @@ const VideoConverterWasm: React.FC<VideoConverterWasmProps> = ({ labels }) => {
 
     const convert = async () => {
         if (!file || !isLoaded) return;
-        setIsConverting(true);
+        setIsLoading(true);
         setDownloadUrl('');
         setError('');
         
         const ffmpeg = ffmpegRef.current;
-        const inputName = 'input' + getExt(file.name);
+        const inputExt = file.name.substring(file.name.lastIndexOf('.'));
+        const inputName = 'input' + inputExt;
         const outputName = 'output.' + targetFormat;
 
         try {
             await ffmpeg.writeFile(inputName, await fetchFile(file));
             
-            // Run FFmpeg command
-            // Example: ffmpeg -i input.mp4 output.gif
-            let args = ['-i', inputName, outputName];
+            let args = ['-i', inputName];
             if (targetFormat === 'gif') {
-                // Optimization for GIF
                 args = ['-i', inputName, '-vf', 'fps=10,scale=320:-1:flags=lanczos', '-c:v', 'gif', outputName];
             } else if (targetFormat === 'mp3') {
                 args = ['-i', inputName, '-vn', '-ab', '128k', outputName];
+            } else {
+                args = ['-i', inputName, outputName];
             }
 
             await ffmpeg.exec(args);
@@ -87,14 +93,10 @@ const VideoConverterWasm: React.FC<VideoConverterWasmProps> = ({ labels }) => {
             setDownloadUrl(url);
         } catch (e: any) {
             console.error("Conversion Error:", e);
-            setError("Conversion failed. Check console.");
+            setError("Falha na conversão. O arquivo pode ser incompatível ou o processamento foi interrompido.");
         } finally {
-            setIsConverting(false);
+            setIsLoading(false);
         }
-    };
-
-    const getExt = (filename: string) => {
-        return filename.substring(filename.lastIndexOf('.'));
     };
 
     const getMimeType = (fmt: string) => {
@@ -107,14 +109,14 @@ const VideoConverterWasm: React.FC<VideoConverterWasmProps> = ({ labels }) => {
 
     return (
         <section className="bg-gray-900 p-6 rounded-lg border border-gray-700">
-            <h3 className="text-xl font-bold mb-2 text-green-400">{labels.converterWasmTitle}</h3>
-            <p className="text-gray-400 mb-4 text-sm">{labels.converterWasmDescription}</p>
+            <h3 className="text-xl font-bold mb-2 text-green-400">{labels.converterWasmTitle || "Conversor de Vídeo"}</h3>
+            <p className="text-gray-400 mb-4 text-sm">{labels.converterWasmDescription || "Converta vídeo localmente usando o processamento do seu navegador."}</p>
 
             {error && <div className="bg-red-900/20 text-red-400 p-3 rounded mb-4 text-sm border border-red-800">{error}</div>}
 
             {!isLoaded && !error ? (
                 <div className="flex items-center text-gray-400 text-sm">
-                    <Spinner /> <span className="ml-2">Loading FFmpeg Core...</span>
+                    <Spinner /> <span className="ml-2">Carregando motor local...</span>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -131,25 +133,25 @@ const VideoConverterWasm: React.FC<VideoConverterWasmProps> = ({ labels }) => {
                     />
 
                     <div className="flex items-center gap-2">
-                        <label className="text-sm text-gray-400">{labels.convertTo}:</label>
+                        <label className="text-sm text-gray-400">{labels.convertTo || "Para"}:</label>
                         <select 
                             value={targetFormat} 
                             onChange={(e) => setTargetFormat(e.target.value)}
-                            className="bg-gray-800 text-white rounded p-2 text-sm border border-gray-600"
+                            className="bg-gray-800 text-white rounded p-2 text-sm border border-gray-600 focus:ring-green-500 focus:border-green-500"
                         >
-                            <option value="gif">GIF (Animated)</option>
+                            <option value="gif">GIF (Animado)</option>
                             <option value="mp4">MP4</option>
                             <option value="webm">WebM</option>
-                            <option value="mp3">MP3 (Audio Only)</option>
+                            <option value="mp3">MP3 (Apenas Áudio)</option>
                         </select>
                     </div>
 
                     <button
                         onClick={convert}
-                        disabled={isConverting || !file}
+                        disabled={isConverting || !file || !isLoaded}
                         className="w-full flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md disabled:opacity-50 transition-colors"
                     >
-                        {isConverting ? <Spinner /> : "Convert Now"}
+                        {isConverting ? <Spinner /> : "Converter Agora"}
                     </button>
 
                     {isConverting && (
@@ -160,13 +162,15 @@ const VideoConverterWasm: React.FC<VideoConverterWasmProps> = ({ labels }) => {
                     )}
 
                     {downloadUrl && (
-                        <a 
-                            href={downloadUrl} 
-                            download={`converted.${targetFormat}`}
-                            className="block w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md text-center mt-4 transition-colors"
-                        >
-                            Download {targetFormat.toUpperCase()}
-                        </a>
+                        <div className="animate-fade-in">
+                            <a 
+                                href={downloadUrl} 
+                                download={`converted.${targetFormat}`}
+                                className="block w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md text-center mt-4 transition-colors"
+                            >
+                                Baixar {targetFormat.toUpperCase()}
+                            </a>
+                        </div>
                     )}
                 </div>
             )}

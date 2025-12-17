@@ -142,7 +142,7 @@ export interface TikTokPost {
   };
 }
 
-export type Theme = 'dark' | 'light' | 'high-contrast';
+export type Theme = 'dark' | 'light' | 'high-contrast' | 'deuteranopia' | 'protanopia' | 'tritanopia';
 
 export const languageMap: Record<Language, string> = {
     pt: '🇧🇷 Português',

@@ -1,8 +1,4 @@
 
-
-
-
-
 import React, { useState } from 'react';
 import { GoogleGenAI, Modality } from '@google/genai';
 import Spinner from './Spinner';
@@ -21,7 +17,7 @@ const CartoonGenerator: React.FC<CartoonGeneratorProps> = ({ labels }) => {
     const styles = [
         { name: "Pixar 3D Style", prompt: "Convert this person into a 3D Disney/Pixar animated character. Cute, big eyes, smooth 3D rendering." },
         { name: "Anime Style", prompt: "Convert this person into a high-quality Japanese Anime character. Studio Ghibli inspired, vibrant colors." },
-        { name: "Vintage Comic", prompt: "Convert this person into a vintage American Comic Book character. Halftone dots, bold outlines, pop art." },
+        { name: "GTA Game Art", prompt: "Convert this person into a GTA (Grand Theft Auto) loading screen art style. Heavy outlines, cel-shaded, vibrant colors, stylized realism." },
         { name: "Caricature", prompt: "Convert this person into a funny artistic caricature. Exaggerated features, artistic sketch style." }
     ];
 
@@ -182,3 +178,4 @@ const CartoonGenerator: React.FC<CartoonGeneratorProps> = ({ labels }) => {
 };
 
 export default CartoonGenerator;
+    

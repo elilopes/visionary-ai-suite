@@ -19,53 +19,53 @@ interface VideoToolsProps {
 
 const VideoTools: React.FC<VideoToolsProps> = ({ labels }) => {
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto pb-20">
             <header className="text-center mb-10">
-                <h2 className="text-3xl font-bold text-gray-200">{labels.title}</h2>
-                <p className="text-gray-400 mt-2">{labels.description}</p>
+                <h2 className="text-3xl font-bold text-[var(--text-main)]">{labels.title || "Video Suite"}</h2>
+                <p className="text-[var(--text-muted)] mt-2">{labels.description || "Suíte profissional de vídeo."}</p>
             </header>
             <div className="space-y-6">
-                <ToolSection title={labels.videoDownloaderTitle} defaultOpen={true}>
+                <ToolSection title={labels.videoDownloaderTitle || "Downloader"} defaultOpen={true}>
                     <VideoDownloader labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.converterWasmTitle || "Client-Side Video Converter"}>
+                <ToolSection title={labels.converterWasmTitle || "Conversor Local"}>
                     <VideoConverterWasm labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.audioVisualizerTitle}>
+                <ToolSection title={labels.audioVisualizerTitle || "Visualizador Áudio"}>
                     <AudioVisualizer labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.vocalRemoverTitle}>
+                <ToolSection title={labels.vocalRemoverTitle || "Remover Vocais"}>
                     <VocalRemover labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.avatarTalkerTitle}>
+                <ToolSection title={labels.avatarTalkerTitle || "Avatar Falante"}>
                     <AvatarTalker labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.cropperTitle}>
+                <ToolSection title={labels.cropperTitle || "Recortar Vídeo"}>
                     <VideoCropper labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.quoteVideoTitle}>
+                <ToolSection title={labels.quoteVideoTitle || "Citação em Vídeo"}>
                     <QuoteToVideo labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.captionerTitle}>
+                <ToolSection title={labels.captionerTitle || "Legendas"}>
                     <VideoCaptioner labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.transcriberTitle}>
+                <ToolSection title={labels.transcriberTitle || "Transcrição"}>
                     <VideoTranscriber labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.ideatorTitle}>
+                <ToolSection title={labels.ideatorTitle || "Ideias IA"}>
                     <VideoIdeator labels={labels} />
                 </ToolSection>
 
-                <ToolSection title={labels.converterTitle}>
+                <ToolSection title={labels.converterTitle || "Converter Script"}>
                     <VideoConverter labels={labels} />
                 </ToolSection>
             </div>

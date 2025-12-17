@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import TextArea from './TextArea';
@@ -9,7 +10,7 @@ interface TextSummarizerProps {
 
 const TextSummarizer: React.FC<TextSummarizerProps> = ({ labels }) => {
     const [inputText, setInputText] = useState('');
-    const [summaryLength, setSummaryLength] = useState(labels.summarizerLengths[1]);
+    const [summaryLength, setSummaryLength] = useState(labels.summarizerLengths ? labels.summarizerLengths[1] : "Medium");
     const [result, setResult] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -25,10 +26,10 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ labels }) => {
             const prompt = `Summarize the following text in a ${summaryLength.toLowerCase()} format. Text: "${inputText}"`;
             
             const response = await ai.models.generateContent({
-              model: 'gemini-2.5-flash',
+              model: 'gemini-3-flash-preview',
               contents: prompt,
             });
-            setResult(response.text);
+            setResult(response.text || "No summary generated.");
         } catch (e) {
             console.error("Error summarizing text:", e);
             setError(labels.error);
@@ -38,44 +39,44 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ labels }) => {
     };
     
     return (
-        <section className="bg-gray-800/50 p-6 rounded-lg shadow-lg">
-            <h3 className="text-2xl font-bold mb-2 text-indigo-400">{labels.summarizerTitle}</h3>
-            <p className="text-gray-400 mb-6">{labels.summarizerDescription}</p>
+        <section className="bg-[var(--bg-panel)] p-6 rounded-lg shadow-lg border border-[var(--border-main)]">
+            <h3 className="text-2xl font-bold mb-2 text-[var(--accent)]">{labels.summarizerTitle || "Resumidor de Texto"}</h3>
+            <p className="text-[var(--text-muted)] mb-6">{labels.summarizerDescription || "Crie resumos rápidos de grandes volumes de texto."}</p>
             
             <div className="space-y-4">
                 <TextArea
                     id="summarizer-input"
-                    label={labels.summarizerInputLabel}
+                    label={labels.summarizerInputLabel || "Texto Original"}
                     value={inputText}
-                    placeholder={labels.summarizerPlaceholder}
+                    placeholder={labels.summarizerPlaceholder || "Cole seu texto aqui..."}
                     onChange={setInputText}
                 />
                 <div>
-                    <label htmlFor="summary-length" className="block text-sm font-medium text-gray-400 mb-2">{labels.summarizerLengthLabel}</label>
+                    <label htmlFor="summary-length" className="block text-sm font-medium text-[var(--text-muted)] mb-2">{labels.summarizerLengthLabel || "Tamanho do Resumo"}</label>
                     <select
                       id="summary-length"
                       value={summaryLength}
                       onChange={(e) => setSummaryLength(e.target.value)}
-                      className="w-full sm:w-1/3 bg-gray-800 border-gray-700 text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out p-3 text-base"
+                      className="w-full sm:w-1/3 bg-[var(--bg-input)] border border-[var(--border-main)] text-[var(--text-main)] rounded-md focus:ring-[var(--accent)] p-3 text-base outline-none"
                     >
-                        {labels.summarizerLengths.map((len: string) => <option key={len} value={len}>{len}</option>)}
+                        {(labels.summarizerLengths || ["Concise", "Medium", "Detailed"]).map((len: string) => <option key={len} value={len}>{len}</option>)}
                     </select>
                 </div>
                 <button
                     onClick={handleSummarize}
                     disabled={isLoading || !inputText.trim()}
-                    className="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors"
+                    className="flex items-center justify-center px-6 py-3 border border-transparent text-sm font-bold rounded-md shadow-sm text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors"
                 >
                     {isLoading ? <Spinner /> : null}
-                    {isLoading ? labels.summarizerButtonLoading : labels.summarizerButton}
+                    {isLoading ? labels.generatingPreview : (labels.summarizerButton || "Resumir Texto")}
                 </button>
             </div>
             
             {(result || error) && (
-                <div className="mt-6 pt-4 border-t border-gray-700">
-                    <h4 className="text-lg font-semibold text-gray-200 mb-2">{labels.resultTitle}</h4>
+                <div className="mt-6 pt-4 border-t border-[var(--border-main)]">
+                    <h4 className="text-lg font-semibold text-[var(--text-main)] mb-2">{labels.resultTitle}</h4>
                     {error && <p className="text-red-400">{error}</p>}
-                    {result && <p className="text-gray-300 whitespace-pre-wrap bg-gray-900/50 p-4 rounded-md">{result}</p>}
+                    {result && <p className="text-[var(--text-main)] whitespace-pre-wrap bg-[var(--bg-input)] p-4 rounded-md border border-[var(--border-main)]">{result}</p>}
                 </div>
             )}
         </section>

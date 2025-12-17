@@ -34,6 +34,7 @@ import ResumeGenerator from './ResumeGenerator';
 import AbntFormatter from './AbntFormatter';
 import ToolSection from './ToolSection';
 import ReferenceGenerator from './ReferenceGenerator';
+import MathSolver from './MathSolver';
 
 interface AiToolsProps {
     labels: any;
@@ -41,36 +42,41 @@ interface AiToolsProps {
 }
 
 const AiTools: React.FC<AiToolsProps> = ({ labels, language }) => {
+    // Verificação de segurança para evitar crash se labels estiverem incompletas
+    if (!labels || !labels.title) {
+        return (
+            <div className="flex justify-center items-center h-64 text-[var(--text-muted)]">
+                Carregando ferramentas de IA...
+            </div>
+        );
+    }
+
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto pb-20">
             <header className="text-center mb-10">
-                <h2 className="text-3xl font-bold text-gray-200">{labels.title}</h2>
+                <h2 className="text-3xl font-bold text-[var(--text-main)]">{labels.title}</h2>
+                <p className="text-[var(--text-muted)] mt-2">Poderosas ferramentas multimodais integradas.</p>
             </header>
             <div className="space-y-6">
-                <ToolSection title="Visual & Creative" defaultOpen={true}>
-                    {/* Image tools moved to PhotoTools */}
-                    <GameAssetGenerator labels={labels} />
-                    <HtmlGenerator labels={labels} />
-                    <MindMapGenerator labels={labels} />
-                </ToolSection>
-
-                <ToolSection title="Documents & Utilities">
+                <ToolSection title="Educação & Carreira" defaultOpen={true}>
+                    <MathSolver labels={labels} />
                     <ResumeGenerator labels={labels} />
-                    <AbntFormatter labels={labels} />
-                    <PdfSummarizer labels={labels} />
-                    <VideoToPdf labels={labels} />
-                    <RoutePlanner labels={labels} />
-                    <TextHumanizer labels={labels} />
-                    <EmailGenerator labels={labels} />
-                </ToolSection>
-
-                <ToolSection title="Education & Career">
                     <InterviewPrep labels={labels} />
                     <StudyGuideGenerator labels={labels} />
                     <AcademicSourceFinder labels={labels} />
                     <AssignmentAnalyzer labels={labels} />
                     <VocabularyBuilder labels={labels} />
                     <LanguageLearningPlan labels={labels} />
+                </ToolSection>
+
+                <ToolSection title="Documentos & Utilidades Profissionais">
+                    <AbntFormatter labels={labels} />
+                    <PdfSummarizer labels={labels} />
+                    <VideoToPdf labels={labels} />
+                    <RoutePlanner labels={labels} />
+                    <TextHumanizer labels={labels} />
+                    <EmailGenerator labels={labels} />
+                    <HtmlGenerator labels={labels} />
                 </ToolSection>
 
                 <ToolSection title="Business & Finance">
@@ -85,15 +91,20 @@ const AiTools: React.FC<AiToolsProps> = ({ labels, language }) => {
                     <PriceComparator labels={labels} />
                 </ToolSection>
 
-                <ToolSection title="Writing & Research">
+                <ToolSection title="Escrita & Pesquisa Acadêmica">
                     <TopicSimplifier labels={labels} />
+                    <ReferenceGenerator labels={labels} />
                     <TextSummarizer labels={labels} />
                     <ArticleGenerator labels={labels} />
                     <ResearchAssistant labels={labels} />
                     <CitationGenerator labels={labels} />
-                    <ReferenceGenerator labels={labels} />
                     <BibliographyOrganizer labels={labels} />
                     <YouTubeTranscriber labels={labels} />
+                </ToolSection>
+
+                <ToolSection title="Visual & Planejamento">
+                    <GameAssetGenerator labels={labels} />
+                    <MindMapGenerator labels={labels} />
                 </ToolSection>
             </div>
         </div>

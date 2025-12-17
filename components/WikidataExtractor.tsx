@@ -53,7 +53,7 @@ const WikidataExtractor: React.FC<WikidataExtractorProps> = ({ labels }) => {
             }
 
             const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: 'gemini-3-flash-preview',
                 contents: prompt,
             });
             setResult(response.text || "No data extracted.");
@@ -87,7 +87,7 @@ const WikidataExtractor: React.FC<WikidataExtractorProps> = ({ labels }) => {
                                 onChange={() => setMode('human')}
                                 className="h-4 w-4 border-gray-600 bg-gray-900 text-green-600 focus:ring-green-600"
                             />
-                            <span className="text-gray-300 text-sm">{labels.wikidataModes.human}</span>
+                            <span className="text-gray-300 text-sm">{labels.wikidataModes?.human || 'Human'}</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input
@@ -98,7 +98,7 @@ const WikidataExtractor: React.FC<WikidataExtractorProps> = ({ labels }) => {
                                 onChange={() => setMode('quickstatements')}
                                 className="h-4 w-4 border-gray-600 bg-gray-900 text-green-600 focus:ring-green-600"
                             />
-                            <span className="text-gray-300 text-sm">{labels.wikidataModes.quickstatements}</span>
+                            <span className="text-gray-300 text-sm">{labels.wikidataModes?.quickstatements || 'QuickStatements'}</span>
                         </label>
                     </div>
                 </div>
@@ -114,10 +114,10 @@ const WikidataExtractor: React.FC<WikidataExtractorProps> = ({ labels }) => {
                 <button
                     onClick={handleGenerate}
                     disabled={isLoading || !input.trim()}
-                    className="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed transition-colors w-full"
+                    className="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-800 disabled:cursor-not-allowed transition-colors w-full"
                 >
                     {isLoading ? <Spinner /> : null}
-                    {isLoading ? labels.generating : labels.wikidataButton}
+                    {isLoading ? labels.generating : (labels.wikidataButton || 'Extract Data')}
                 </button>
             </div>
 
@@ -141,9 +141,9 @@ const WikidataExtractor: React.FC<WikidataExtractorProps> = ({ labels }) => {
                                     className="flex items-center justify-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-md shadow-sm text-white bg-gray-700 hover:bg-gray-600 transition-colors w-full"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                                     </svg>
-                                    {labels.openQuickStatements}
+                                    {labels.openQuickStatements || 'Open Tool'}
                                 </button>
                             )}
                         </div>

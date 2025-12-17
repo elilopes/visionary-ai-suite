@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import TextArea from './TextArea';
@@ -11,6 +10,7 @@ interface ReferenceGeneratorProps {
 const ReferenceGenerator: React.FC<ReferenceGeneratorProps> = ({ labels }) => {
     const [input, setInput] = useState('');
     const [result, setResult] = useState('');
+    const [groundingChunks, setGroundingChunks] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -19,6 +19,7 @@ const ReferenceGenerator: React.FC<ReferenceGeneratorProps> = ({ labels }) => {
         setIsLoading(true);
         setError('');
         setResult('');
+        setGroundingChunks([]);
 
         try {
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
@@ -35,8 +36,17 @@ const ReferenceGenerator: React.FC<ReferenceGeneratorProps> = ({ labels }) => {
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: prompt,
+                config: {
+                    tools: [{ googleSearch: {} }],
+                },
             });
+            
             setResult(response.text || "No references found.");
+            
+            if (response.candidates?.[0]?.groundingMetadata?.groundingChunks) {
+                setGroundingChunks(response.candidates[0].groundingMetadata.groundingChunks);
+            }
+
         } catch (e) {
             console.error("Error generating references:", e);
             setError("Error generating references.");
@@ -78,7 +88,37 @@ const ReferenceGenerator: React.FC<ReferenceGeneratorProps> = ({ labels }) => {
                 <div className="mt-6 pt-4 border-t border-gray-700">
                     <h4 className="text-lg font-semibold text-gray-200 mb-2">{labels.resultTitle}</h4>
                     {error && <p className="text-red-400">{error}</p>}
-                    {result && <div className="text-gray-300 prose prose-invert bg-gray-900/50 p-4 rounded-md" dangerouslySetInnerHTML={{ __html: result.replace(/\n/g, '<br />') }} />}
+                    {result && (
+                        <div className="space-y-4">
+                            <div className="text-gray-300 prose prose-invert bg-gray-900/50 p-4 rounded-md whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: result.replace(/\n/g, '<br />') }} />
+                            
+                            {groundingChunks.length > 0 && (
+                                <div className="mt-4 bg-gray-800/50 p-4 rounded-lg">
+                                    <h5 className="text-sm font-semibold text-indigo-400 mb-2 flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                                        </svg>
+                                        Found Online Sources (Verification):
+                                    </h5>
+                                    <ul className="space-y-2">
+                                        {groundingChunks.map((chunk, idx) => {
+                                            if (chunk.web?.uri && chunk.web?.title) {
+                                                return (
+                                                    <li key={idx}>
+                                                        <a href={chunk.web.uri} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white hover:underline text-xs flex items-start gap-2 transition-colors">
+                                                            <span className="text-indigo-500 mt-0.5">•</span>
+                                                            <span>{chunk.web.title}</span>
+                                                        </a>
+                                                    </li>
+                                                );
+                                            }
+                                            return null;
+                                        })}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
         </section>

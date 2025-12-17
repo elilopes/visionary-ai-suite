@@ -12,9 +12,10 @@ interface SocialMediaToolsProps {
 
 const SocialMediaTools: React.FC<SocialMediaToolsProps> = ({ labels }) => {
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto pb-20">
             <header className="text-center mb-10">
-                <h2 className="text-3xl font-bold text-gray-200">Social Media & Analytics</h2>
+                <h2 className="text-3xl font-bold text-[var(--text-main)]">Social Media & Analytics</h2>
+                <p className="text-[var(--text-muted)] mt-2">Inteligência de mercado para redes sociais.</p>
             </header>
             <div className="space-y-6">
                 <ToolSection title="Instagram Feed & AI" defaultOpen={true}>

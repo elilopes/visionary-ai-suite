@@ -1,5 +1,7 @@
 {
   "name": "Visionary AI Suite",
   "description": "A comprehensive AI workspace featuring advanced prompt engineering, image generation, photo restoration, and content analysis tools.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "camera"
+  ]
 }

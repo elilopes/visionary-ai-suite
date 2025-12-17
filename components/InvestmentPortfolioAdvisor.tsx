@@ -11,8 +11,12 @@ interface InvestmentPortfolioAdvisorProps {
 }
 
 const InvestmentPortfolioAdvisor: React.FC<InvestmentPortfolioAdvisorProps> = ({ labels, language }) => {
-    const [profile, setProfile] = useState(labels.portfolioAdvisorProfiles[1]); // Default to Moderate
-    const [timeHorizon, setTimeHorizon] = useState(labels.portfolioAdvisorTimeHorizons[2]); // Default to Long-Term
+    // Safe initialization with fallbacks
+    const profiles = labels.portfolioAdvisorProfiles || ["Conservador", "Moderado", "Arrojado"];
+    const horizons = labels.portfolioAdvisorTimeHorizons || ["Curto", "Médio", "Longo"];
+    
+    const [profile, setProfile] = useState(profiles[1] || profiles[0]); 
+    const [timeHorizon, setTimeHorizon] = useState(horizons[2] || horizons[0]); 
     const [amount, setAmount] = useState('');
     const [result, setResult] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -43,13 +47,13 @@ The suggestion must include:
 3. A brief explanation of the rationale behind this allocation.
 4. A mention of current major financial market trends relevant to this portfolio.
 IMPORTANT: Include a disclaimer that this is not financial advice and past performance is not indicative of future results. Format the response using markdown.
-IMPORTANT: Respond in ${languageMap[language as keyof typeof languageMap]}.`;
+IMPORTANT: Respond in ${languageMap[language as keyof typeof languageMap] || 'English'}.`;
             
             const response = await ai.models.generateContent({
               model: 'gemini-2.5-flash',
               contents: prompt,
             });
-            setResult(response.text);
+            setResult(response.text || '');
         } catch (e) {
             console.error("Error generating portfolio:", e);
             setError(labels.error);
@@ -108,7 +112,7 @@ IMPORTANT: Respond in ${languageMap[language as keyof typeof languageMap]}.`;
                         onChange={(e) => setProfile(e.target.value)}
                         className="w-full bg-gray-800 border-gray-700 text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out p-3 text-base"
                         >
-                            {labels.portfolioAdvisorProfiles.map((p: string) => <option key={p} value={p}>{p}</option>)}
+                            {profiles.map((p: string) => <option key={p} value={p}>{p}</option>)}
                         </select>
                     </div>
                      <div>
@@ -119,7 +123,7 @@ IMPORTANT: Respond in ${languageMap[language as keyof typeof languageMap]}.`;
                         onChange={(e) => setTimeHorizon(e.target.value)}
                         className="w-full bg-gray-800 border-gray-700 text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out p-3 text-base"
                         >
-                            {labels.portfolioAdvisorTimeHorizons.map((t: string) => <option key={t} value={t}>{t}</option>)}
+                            {horizons.map((t: string) => <option key={t} value={t}>{t}</option>)}
                         </select>
                     </div>
                     <div>

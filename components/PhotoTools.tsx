@@ -30,42 +30,61 @@ import ImageSonifier from './ImageSonifier';
 import ToolSection from './ToolSection';
 import ArFilters from './ArFilters';
 import LiquifyEditor from './LiquifyEditor';
+import AutoPhotoEnhancer from './AutoPhotoEnhancer';
+import ManualEnhancer from './ManualEnhancer';
+import SketchToImage from './SketchToImage';
 
 interface PhotoToolsProps {
     labels: any;
 }
 
 const PhotoTools: React.FC<PhotoToolsProps> = ({ labels }) => {
+    // Verificação de segurança para evitar crash se as labels específicas do estúdio de foto faltarem
+    if (!labels || !labels.photoTitle) {
+        return (
+            <div className="flex flex-col justify-center items-center h-64 text-[var(--text-muted)] space-y-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--accent)]"></div>
+                <p>Configurando Photo Studio...</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto pb-20">
             <header className="text-center mb-10">
-                <h2 className="text-3xl font-bold text-gray-200">{labels.photoTitle}</h2>
+                <h2 className="text-3xl font-bold text-[var(--text-main)]">{labels.photoTitle}</h2>
+                <p className="text-[var(--text-muted)] mt-2">IA de última geração para processamento de imagem.</p>
             </header>
             <div className="space-y-6">
-                <ToolSection title="Augmented Reality & Real-Time" defaultOpen={true}>
+                <ToolSection title="Melhoria & Retoque" defaultOpen={true}>
+                    <AutoPhotoEnhancer labels={labels} />
+                    <ManualEnhancer labels={labels} />
+                </ToolSection>
+
+                <ToolSection title="Realidade Aumentada & Filtros">
                     <ArFilters labels={labels} />
                 </ToolSection>
 
-                <ToolSection title="Manual Editing & Distortion">
+                <ToolSection title="Distorção & Edição Manual">
                     <LiquifyEditor labels={labels} />
                 </ToolSection>
 
-                <ToolSection title="Audio-Visual Synesthesia">
+                <ToolSection title="Sinergia Áudio-Visual">
                     <ImageSonifier labels={labels} />
                 </ToolSection>
 
-                <ToolSection title="Analysis & Description">
+                <ToolSection title="Análise & Legendas">
                     <ImageAnalyzer labels={labels} />
                     <ColorPaletteExtractor labels={labels} />
-                </ToolSection>
-
-                <ToolSection title="Creative Storytelling">
-                    <StorybookGenerator labels={labels} />
-                    <VisualStoryteller labels={labels} />
                     <ImageCaptionGenerator labels={labels} />
                 </ToolSection>
 
-                <ToolSection title="Style Transformation">
+                <ToolSection title="Narrativa & Criatividade">
+                    <StorybookGenerator labels={labels} />
+                    <VisualStoryteller labels={labels} />
+                </ToolSection>
+
+                <ToolSection title="Transformação de Estilo">
                     <StyleTransformer labels={labels} />
                     <ThreeDPhotoGenerator labels={labels} />
                     <DollHolderGenerator labels={labels} />
@@ -75,7 +94,7 @@ const PhotoTools: React.FC<PhotoToolsProps> = ({ labels }) => {
                     <BnWGenerator labels={labels} />
                 </ToolSection>
 
-                <ToolSection title="Restoration & Enhancement">
+                <ToolSection title="Restauração & Remoção">
                     <BackgroundReplacer labels={labels} />
                     <ImageColorizer labels={labels} />
                     <ImageRestorer labels={labels} />
@@ -84,7 +103,7 @@ const PhotoTools: React.FC<PhotoToolsProps> = ({ labels }) => {
                     <ImageExpander labels={labels} />
                 </ToolSection>
 
-                <ToolSection title="Virtual Try-On & Body">
+                <ToolSection title="Estética & Provador Virtual">
                     <ExpressionGenerator labels={labels} />
                     <VirtualFittingRoom labels={labels} />
                     <MixMatchTryOn labels={labels} />
@@ -92,7 +111,8 @@ const PhotoTools: React.FC<PhotoToolsProps> = ({ labels }) => {
                     <WigTryOn labels={labels} />
                 </ToolSection>
 
-                <ToolSection title="Creation & Design">
+                <ToolSection title="Design & Modelagem">
+                    <SketchToImage labels={labels} />
                     <TextToImageGenerator labels={labels} />
                     <ThreeDObjectGenerator labels={labels} />
                     <LogoGenerator labels={labels} />

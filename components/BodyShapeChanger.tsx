@@ -1,6 +1,4 @@
 
-
-
 import React, { useState } from 'react';
 import { GoogleGenAI, Modality } from '@google/genai';
 import Spinner from './Spinner';
@@ -12,7 +10,12 @@ interface BodyShapeChangerProps {
 
 const BodyShapeChanger: React.FC<BodyShapeChangerProps> = ({ labels }) => {
     const [file, setFile] = useState<File | null>(null);
-    const [bodyType, setBodyType] = useState(labels.bodyShapeChangerTypes[2]); // Default: Muscular
+    
+    // Safety check for array existence and length
+    const types = labels?.bodyShapeChangerTypes || ["Original", "Muscular", "Atlético"];
+    const initialType = types.length > 2 ? types[2] : (types.length > 0 ? types[0] : "Atlético");
+    
+    const [bodyType, setBodyType] = useState(initialType); 
     const [image, setImage] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -62,7 +65,7 @@ const BodyShapeChanger: React.FC<BodyShapeChangerProps> = ({ labels }) => {
 
         } catch (e) {
             console.error("Error changing body shape:", e);
-            setError(labels.error);
+            setError(labels.error || "Erro ao processar imagem.");
         } finally {
             setIsLoading(false);
         }
@@ -93,7 +96,7 @@ const BodyShapeChanger: React.FC<BodyShapeChangerProps> = ({ labels }) => {
                         onChange={(e) => setBodyType(e.target.value)}
                         className="w-full bg-gray-800 border-gray-700 text-white rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 p-3 text-base"
                     >
-                        {labels.bodyShapeChangerTypes.map((t: string) => <option key={t} value={t}>{t}</option>)}
+                        {types.map((t: string) => <option key={t} value={t}>{t}</option>)}
                     </select>
                 </div>
                 

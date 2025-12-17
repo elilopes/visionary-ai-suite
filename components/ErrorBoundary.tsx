@@ -1,5 +1,5 @@
 
-import React, { type ErrorInfo, type ReactNode } from 'react';
+import React, { Component, ReactNode, ErrorInfo } from 'react';
 
 interface ErrorBoundaryProps {
   children?: ReactNode;
@@ -10,24 +10,45 @@ interface ErrorBoundaryState {
   error?: Error;
 }
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  public state: ErrorBoundaryState = {
-    hasError: false
-  };
+/**
+ * ErrorBoundary component to catch rendering errors in its child component tree.
+ */
+// Fix: Directly extend Component and provide props/state types to fix 'props' and 'setState' missing errors
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    // Fix: Initialize state in constructor
+    this.state = {
+      hasError: false,
+      error: undefined
+    };
+  }
 
+  /**
+   * Static method to update state when an error is encountered.
+   */
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    // Update state so the next render will show the fallback UI.
     return { hasError: true, error };
   }
 
+  /**
+   * Lifecycle method to log error information.
+   */
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error:", error, errorInfo);
   }
 
+  /**
+   * Resets the error state to allow the app to attempt recovery.
+   */
   handleRetry = () => {
+    // Fix: setState is correctly inherited from React.Component
     this.setState({ hasError: false, error: undefined });
   };
 
   render() {
+    // Check internal state to determine if fallback UI should be shown
     if (this.state.hasError) {
       return (
         <div className="p-8 bg-gray-800 border border-red-500/30 rounded-lg text-center my-6 shadow-xl max-w-2xl mx-auto">
@@ -46,6 +67,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             Try Again
           </button>
           
+           {/* Display error details if present in state */}
            {this.state.error && (
             <details className="mt-8 text-left text-xs text-gray-500 border-t border-gray-700 pt-4">
               <summary className="cursor-pointer hover:text-gray-300 font-medium">View Technical Details</summary>
@@ -58,6 +80,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       );
     }
 
+    // Fix: Access children via this.props which is correctly inherited
     return this.props.children;
   }
 }
